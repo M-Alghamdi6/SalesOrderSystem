@@ -3,6 +3,7 @@ using Microsoft.OpenApi.Models;
 using SalesOrderSystem_BackEnd.Profiles;
 using SalesOrderSystem_BackEnd.Services;
 using SalesOrderSystem_BackEnd.Middleware;
+using SalesOrderSystem_BackEnd.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 

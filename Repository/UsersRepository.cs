@@ -1,11 +1,11 @@
 ﻿using Dapper;
 using SalesOrderSystem_BackEnd.DTOs;
 using SalesOrderSystem_BackEnd.Models;
-using SalesOrderSystem_BackEnd.Repository;
+using SalesOrderSystem_BackEnd.Services;
 using System.Data;
 using System.Net;
 
-namespace SalesOrderSystem_BackEnd.Services
+namespace SalesOrderSystem_BackEnd.Repository
 {
     public class UsersRepository : RepositoryBase<UsersModel>, IUsersRepository
     {
@@ -18,11 +18,12 @@ namespace SalesOrderSystem_BackEnd.Services
             try
             {
                 // 1️⃣ Get user by username
-                var sql = "SELECT TOP 1 * FROM Users WHERE UserName = @UserName";
-                var foundUser = await _sqlConnection.QueryFirstOrDefaultAsync<UsersModel>(sql, new { user.UserName });
+                var sql = "SELECT TOP 1 * FROM [apps].[Users] WHERE UserName = @UserName"; ;
+                var foundUser = await _sqlConnection.QueryFirstOrDefaultAsync<UsersModel>(
+                    sql, new { UserName = user.UserName });
 
                 // 2️⃣ Check if user exists and password matches
-                if (foundUser == null)
+                if (foundUser == null || foundUser.Password != user.Password)
                 {
                     return new JSONResponseDTO<UsersModel?>
                     {
@@ -32,17 +33,7 @@ namespace SalesOrderSystem_BackEnd.Services
                     };
                 }
 
-                if (foundUser.Password != user.Password)
-                {
-                    return new JSONResponseDTO<UsersModel?>
-                    {
-                        StatusCode = HttpStatusCode.Unauthorized,
-                        Data = null,
-                        Message = "Invalid username or password"
-                    };
-                }
-
-                // 3️⃣ If success
+                // 3️⃣ Login successful
                 return new JSONResponseDTO<UsersModel?>
                 {
                     StatusCode = HttpStatusCode.OK,
@@ -60,6 +51,7 @@ namespace SalesOrderSystem_BackEnd.Services
                 };
             }
         }
+
 
     }
 }

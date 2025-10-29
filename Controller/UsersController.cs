@@ -28,7 +28,7 @@ namespace SalesOrderSystem_BackEnd.Controller
             await _sqlConnection.OpenAsync();
 
             var user = await _sqlConnection.QueryFirstOrDefaultAsync<UserRecord>(
-                "SELECT Username, Password, Role FROM Users WHERE Username = @Username",
+                "SELECT Username, Password, Role FROM [apps].[Users] WHERE Username = @Username",
                 new { Username = dto.UserName });
 
             if (user == null || user.Password != dto.Password)
