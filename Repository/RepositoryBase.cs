@@ -27,14 +27,19 @@ namespace SalesOrderSystem_BackEnd.Repository
         {
             return _mapping.MapResponse<TSrc, TDest>(source);
         }
-            
+
         public async Task<JSONResponseDTO<T>> AddAsync(T entity)
         {
             try
             {
+                // Only include actual table columns (exclude navigation properties)
                 var insertData = entity.GetType()
                                        .GetProperties()
-                                       .Where(p => p.Name != "Id")
+                                       .Where(p => p.Name != "Id" &&
+                                                   p.PropertyType.IsPrimitive ||
+                                                   p.PropertyType == typeof(string) ||
+                                                   p.PropertyType == typeof(DateTime) ||
+                                                   Nullable.GetUnderlyingType(p.PropertyType) != null)
                                        .ToDictionary(p => p.Name, p => p.GetValue(entity));
 
                 var query = new SqlKata.Query(_tableName).AsInsert(insertData);
@@ -55,7 +60,7 @@ namespace SalesOrderSystem_BackEnd.Repository
                     Id = id
                 };
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 return new JSONResponseDTO<T>
                 {
@@ -122,7 +127,7 @@ namespace SalesOrderSystem_BackEnd.Repository
             }
         }
 
-        public async Task<JSONResponseDTO<object>> UpdateAsync(int id, T entity)
+        public async Task<JSONResponseDTO<T>> UpdateAsync(int id, T entity)
         {
             try
             {
@@ -137,19 +142,28 @@ namespace SalesOrderSystem_BackEnd.Repository
 
                 var sqlResult = _compiler.Compile(query);
 
-                var parameters = new Dictionary<string, object>();
-                var affected = await _sqlConnection.ExecuteAsync(sqlResult.Sql, parameters);
+                var affected = await _sqlConnection.ExecuteAsync(sqlResult.Sql, sqlResult.NamedBindings);
 
-                return new JSONResponseDTO<object>
+                if (affected == 0)
+                    return new JSONResponseDTO<T>
+                    {
+                        StatusCode = HttpStatusCode.NotFound,
+                        Message = "Record not found",
+                        Data = null,
+                        Id = id
+                    };
+
+                return new JSONResponseDTO<T>
                 {
-                    StatusCode = affected > 0 ? HttpStatusCode.OK : HttpStatusCode.NotFound,
-                    Message = affected > 0 ? "Record updated successfully." : "Record not found",
-                    Data = null
+                    StatusCode = HttpStatusCode.OK,
+                    Message = "Record updated successfully",
+                    Data = entity,
+                    Id = id
                 };
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                return new JSONResponseDTO<object>
+                return new JSONResponseDTO<T>
                 {
                     StatusCode = HttpStatusCode.InternalServerError,
                     Message = $"Error updating record: {ex.Message}",

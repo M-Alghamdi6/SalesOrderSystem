@@ -18,7 +18,7 @@ namespace SalesOrderSystem_BackEnd.Controller
             _httpContextAccessor = httpContextAccessor;
         }
 
-        // ✅ Basic login: checks if user exists and stores role in session
+        //  Basic login: checks if user exists and stores role in session
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserDTO dto)
         {
@@ -46,7 +46,7 @@ namespace SalesOrderSystem_BackEnd.Controller
             });
         }
 
-        // ✅ Get current user info
+        // Get current user info
         [HttpGet("me")]
         public IActionResult GetCurrentUser()
         {

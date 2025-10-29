@@ -1,4 +1,4 @@
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.OpenApi.Models;
 using SalesOrderSystem_BackEnd.Profiles;
 using SalesOrderSystem_BackEnd.Services;
@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // ------------------- Services -------------------
 builder.Services.AddControllers();
 
-// ? Add Swagger documentation
+// ✅ Add Swagger documentation
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
@@ -21,10 +21,10 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// ? Add HttpContext accessor (needed for session)
+// Add HttpContext accessor (needed for session)
 builder.Services.AddHttpContextAccessor();
 
-// ? Enable session support
+//  Enable session support
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -33,14 +33,14 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(60);
 });
 
-// ? Database connection
+// Database connection
 builder.Services.AddTransient<SqlConnection>(_ =>
     new SqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ? AutoMapper
+// AutoMapper
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
 
-// ? Repositories and Services
+// Repositories and Services
 builder.Services.AddScoped<IMappingService, MappingService>();
 builder.Services.AddScoped<IUsersRepository, UsersRepository>(sp =>
 {
@@ -49,7 +49,15 @@ builder.Services.AddScoped<IUsersRepository, UsersRepository>(sp =>
     return new UsersRepository(sqlConn, mapping);
 });
 
-// ? CORS for Angular frontend
+builder.Services.AddScoped<ISalesRequestService, SalesRequestService>(sp =>
+{
+    var sqlConn = sp.GetRequiredService<SqlConnection>();
+    var mapping = sp.GetRequiredService<IMappingService>();
+    return new SalesRequestService(sqlConn, mapping);
+});
+
+
+// CORS for Angular frontend
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp", builder =>
@@ -66,16 +74,16 @@ var app = builder.Build();
 // ------------------- Middleware -------------------
 app.UseRouting();
 
-// ? Use CORS before session/auth
+//  Use CORS before session/auth
 app.UseCors("AllowAngularApp");
 
-// ? Session before endpoints
+//  Session before endpoints
 app.UseSession();
 
 app.UseStaticFiles();
 app.UseHttpsRedirection();
 
-// ? Global exception handling middleware
+//  Global exception handling middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthentication();
