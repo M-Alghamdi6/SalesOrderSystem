@@ -1,6 +1,8 @@
-﻿using SalesOrderSystem_BackEnd.Models;
-using SalesOrderSystem_BackEnd.DTOs;
+﻿using SalesOrderSystem_BackEnd.DTOs;
+using SalesOrderSystem_BackEnd.Models;
 using SalesOrderSystem_BackEnd.Repository;
+using System.Net;
+
 
 namespace SalesOrderSystem_BackEnd.Services
 {
@@ -12,5 +14,13 @@ namespace SalesOrderSystem_BackEnd.Services
         Task<JSONResponseDTO<SalesRequesterTableDTO>> UpdateSalesRequest(int id, SalesRequesterTableDTO dto);
         Task<JSONResponseDTO<object>> DeleteSalesRequest(int id);
         Task<JSONResponseDTO<SalesRequesterTableDTO>> CancelSalesRequest(int id);
+        Task<ServiceResponse<IEnumerable<SalesRequestModel>>> GetSalesRequestsByUserId(int userId);
     }
+    public class ServiceResponse<T>
+    {
+        public T? Data { get; set; }
+        public HttpStatusCode StatusCode { get; set; }
+        public string? Message { get; set; }
+    }
+    
 }

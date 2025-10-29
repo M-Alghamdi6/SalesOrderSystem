@@ -156,4 +156,16 @@ public class SalesRequestService : RepositoryBase<SalesRequestModel>, ISalesRequ
 
         return _mapping.MapResponse<SalesRequestModel, SalesRequesterTableDTO>(result);
     }
+    public async Task<ServiceResponse<IEnumerable<SalesRequestModel>>> GetSalesRequestsByUserId(int userId)
+    {
+        var response = new ServiceResponse<IEnumerable<SalesRequestModel>>();
+
+        var query = "SELECT * FROM [dbo].[SalesRequest] WHERE UserId = @UserId";
+
+        var requests = await _sqlConnection.QueryAsync<SalesRequestModel>(query, new { UserId = userId });
+
+        response.Data = requests;
+        response.StatusCode = System.Net.HttpStatusCode.OK;
+        return response;
+    }
 }
