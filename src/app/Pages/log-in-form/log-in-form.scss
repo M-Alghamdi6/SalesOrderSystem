@@ -1,0 +1,28 @@
+.login-container {
+  max-width: 400px;
+  margin: 50px auto;          // center horizontally & vertical spacing
+  padding: 30px;              // inner spacing
+  border: 1px solid #ccc;     // subtle border
+  border-radius: 8px;         // rounded corners
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1); // soft shadow
+  background-color: #fff;     // white background
+}
+
+.login-container h2 {
+  text-align: center;
+  margin-bottom: 20px;        // space below heading
+}
+
+.dx-form .dx-field {
+  margin-bottom: 15px;        // spacing between DevExtreme form fields
+}
+
+.dx-button {
+  margin-top: 10px;           // space above button
+}
+
+.error {
+  color: red;
+  margin-top: 15px;           // space above error message
+  text-align: center;
+}
