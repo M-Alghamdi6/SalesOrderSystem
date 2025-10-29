@@ -1,0 +1,66 @@
+<div class="toolbar mb-3">
+  <button class="btn btn-primary" (click)="openCreatePopup()">+ New Sales Request</button>
+</div>
+
+<!-- Sales Requests Grid -->
+<dx-data-grid
+  [dataSource]="salesRequests"
+  [showBorders]="true"
+  [columnAutoWidth]="true"
+ 
+>
+  <dxi-column dataField="sr" caption="SR#"></dxi-column>
+  <dxi-column dataField="salesDate" caption="Sales Date"></dxi-column>
+  <dxi-column dataField="salesNote" caption="Sales Note"></dxi-column>
+  <dxi-column dataField="approver" caption="Approver"></dxi-column>
+  <dxi-column dataField="status" caption="Status"></dxi-column>
+  <dxi-column dataField="reason" caption="Reason"></dxi-column>
+  <dxi-column dataField="actions" caption="Actions" cellTemplate="actionTemplate"></dxi-column>
+
+  <ng-template #actionTemplate let-data>
+    <button
+      *ngFor="let act of data.data.actions.split(',')"
+      class="btn btn-sm m-1"
+      (click)="onActionClick(act, data)"
+    >
+      {{ act }}
+    </button>
+  </ng-template>
+</dx-data-grid>
+
+<!-- View Items Grid -->
+<h3 class="mt-4" *ngIf="items.length > 0">Sales Request Items</h3>
+<dx-data-grid
+  *ngIf="items.length > 0"
+  [dataSource]="items"
+  [showBorders]="true"
+  [columnAutoWidth]="true"
+>
+  <dxi-column dataField="line" caption="Line#"></dxi-column>
+  <dxi-column dataField="itemCode" caption="Item Code"></dxi-column>
+  <dxi-column dataField="description" caption="Description"></dxi-column>
+  <dxi-column dataField="unit" caption="Unit"></dxi-column>
+  <dxi-column dataField="quantity" caption="Quantity"></dxi-column>
+  <dxi-column dataField="price" caption="Price"></dxi-column>
+  <dxi-column dataField="amount" caption="Amount"></dxi-column>
+</dx-data-grid>
+
+<!-- Create Sales Request Popup -->
+<dx-popup
+  [(visible)]="popupVisible"
+  [width]="500"
+  [height]="400"
+  [showTitle]="true"
+  title="New Sales Request"
+>
+  <dx-form [formData]="newRequest">
+    <dxi-item dataField="salesDate" editorType="dxDateBox" [editorOptions]="{ displayFormat: 'dd-MMM-yyyy' }" [label]="{ text: 'Sales Date' }"></dxi-item>
+    <dxi-item dataField="salesNote" editorType="dxTextBox" [label]="{ text: 'Sales Note' }"></dxi-item>
+    <dxi-item dataField="approver" editorType="dxTextBox" [label]="{ text: 'Approver' }"></dxi-item>
+
+    <div class="text-end mt-4">
+      <button class="btn btn-success" (click)="saveNewRequest()">Save</button>
+      <button class="btn btn-secondary ms-2" (click)="popupVisible=false">Cancel</button>
+    </div>
+  </dx-form>
+</dx-popup>
