@@ -1,0 +1,42 @@
+<div class="login-container">
+  <div class="login-card">
+    <h2>Sales Request System</h2>
+    <p class="subtitle">Sign in to continue</p>
+
+    <div class="login-form">
+      <div class="form-group">
+        <label>Username</label>
+        <dx-text-box
+          [(value)]="loginData.username"
+          placeholder="Enter your username"
+          [disabled]="service.loading">
+          <dx-validator>
+            <dxi-validation-rule type="required" message="Username is required"></dxi-validation-rule>
+          </dx-validator>
+        </dx-text-box>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <dx-text-box
+          [(value)]="loginData.password"
+          mode="password"
+          placeholder="Enter your password"
+          [disabled]="service.loading">
+          <dx-validator>
+            <dxi-validation-rule type="required" message="Password is required"></dxi-validation-rule>
+          </dx-validator>
+        </dx-text-box>
+      </div>
+
+      <dx-button
+        text="Sign In"
+        type="default"
+        [useSubmitBehavior]="false"
+        [disabled]="service.loading"
+        (onClick)="onLogin()"
+        width="100%">
+      </dx-button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,56 @@
+$color_1: #333;
+$color_2: #666;
+
+.dashboard-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.dashboard-card {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  h2 {
+    margin: 0 0 20px 0;
+    color: $color_1;
+    text-align: center;
+  }
+}
+
+.subtitle {
+  text-align: center;
+  color: $color_2;
+  margin: 0 0 20px 0;
+}
+
+.dx-data-grid {
+  border-radius: 8px;
+  .dx-header-row {
+    background-color: #f5f5f5;
+    color: $color_1;
+    font-weight: 600;
+  }
+  .dx-row {
+    &:hover {
+      background-color: rgba(102, 126, 234, 0.1);
+    }
+  }
+}
+
+.actions-cell {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
