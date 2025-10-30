@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using SalesOrderSystem_BackEnd.DTOs;
 using SalesOrderSystem_BackEnd.Models;
 using SalesOrderSystem_BackEnd.Repository;
@@ -17,7 +17,7 @@ public class SalesRequestService : RepositoryBase<SalesRequestModel>, ISalesRequ
         
     }
 
-    // توليد رقم الطلب تلقائي
+
     private async Task<string> GenerateSalesRequestNo()
     {
         var allRequests = await this.GetAllAsync();
@@ -90,7 +90,7 @@ public class SalesRequestService : RepositoryBase<SalesRequestModel>, ISalesRequ
                 Message = "Sales Request not found"
             };
 
-        // تحويل SalesDate من string إلى DateTime
+       
         if (!DateTime.TryParse(dto.SalesDate, out var parsedDate))
         {
             return new JSONResponseDTO<SalesRequesterTableDTO>
