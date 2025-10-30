@@ -9,6 +9,8 @@ namespace SalesOrderSystem_BackEnd.Profiles
         public MappingProfile() {
 
             CreateMap<UsersModel, UserDTO>().ReverseMap();
+            CreateMap<SalesRequestModel, SalesRequesterTableDTO>().ReverseMap();
+           
         }
     }
 }
