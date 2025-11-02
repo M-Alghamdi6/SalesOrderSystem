@@ -1,0 +1,38 @@
+<!-- Toolbar at the top -->
+<dx-toolbar [items]="toolbarContent"></dx-toolbar>
+
+<!-- Drawer -->
+<dx-drawer
+  #drawer
+  [openedStateMode]="selectedOpenMode"
+  [position]="selectedPosition"
+  [revealMode]="selectedRevealMode"
+  [opened]="isDrawerOpen"
+  [minSize]="37"
+  [shading]="false"
+>
+
+  <!-- Drawer menu: use dxTemplate "menu" -->
+  <div *dxTemplate="let data of 'menu'">
+    <dx-list
+      [items]="navigation"
+      displayExpr="text"
+      [width]="220"
+      (itemClick)="onMenuItemClick($event)"
+      [activeStateEnabled]="true"
+    >
+      <div *dxTemplate="let item of 'item'">
+        <i class="dx-icon" [ngClass]="'dx-icon-' + item.icon"></i>
+        <span style="margin-left: 10px">{{ item.text }}</span>
+      </div>
+    </dx-list>
+  </div>
+
+  <!-- Main content visible next to drawer -->
+  <div class="content">
+    <h2>{{ selectedMenu?.text || 'Welcome!' }}</h2>
+    <p *ngIf="!selectedMenu">This is the sidebar content. Click a menu item to see it here.</p>
+    <p *ngIf="selectedMenu">You selected <b>{{ selectedMenu.text }}</b>.</p>
+  </div>
+
+</dx-drawer>

@@ -1,0 +1,63 @@
+.request-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 600px;
+  margin-bottom: 30px;
+
+  .form-row {
+    display: flex;
+    flex-direction: column;
+
+    label {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    input, textarea {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+  }
+
+  button {
+    width: 200px;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #115293;
+    }
+  }
+}
+
+/* Status badges */
+.badge-pending {
+  background-color: orange;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 5px;
+}
+.badge-approved {
+  background-color: green;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 5px;
+}
+.badge-rejected {
+  background-color: red;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 5px;
+}

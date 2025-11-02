@@ -1,30 +1,47 @@
+<dx-load-panel
+  [visible]="loading"
+  message="Loading..."
+  shadingColor="rgba(0,0,0,0.4)">
+</dx-load-panel>
+
 <dx-data-grid
-  [dataSource]="requests"
-  [showBorders]="true"
-  [showRowLines]="true"
-  [noDataText]="'No sales requests found'"
-  class="dx-data-grid">
+  [dataSource]="dataSource$ | async"
+  [keyExpr]="'id'"
+  [showBorders]="true">
 
-  <dxi-column dataField="SR" caption="SR"></dxi-column>
-  <dxi-column dataField="SalesDate" caption="Date" dataType="date"></dxi-column>
-  <dxi-column dataField="SalesNote" caption="Sales Note"></dxi-column>
-  <dxi-column dataField="Approver" caption="Approver"></dxi-column>
-  <dxi-column dataField="Status" caption="Status"></dxi-column>
-  <dxi-column dataField="Reason" caption="Reason"></dxi-column>
+  <dxi-column dataField="id" caption="ID" width="50"></dxi-column>
+  <dxi-column dataField="salesDate" caption="Date"></dxi-column>
+  <dxi-column dataField="salesNote" caption="Note"></dxi-column>
+  <dxi-column dataField="approver" caption="Approver"></dxi-column>
+  
+  <dxi-column dataField="status" caption="Status">
+    <ng-template dxTemplate="cell" let-cellData>
+      <span [ngClass]="getStatusBadgeClass(cellData.data.status)">
+        {{ cellData.data.status }}
+      </span>
+    </ng-template>
+  </dxi-column>
 
-  <!-- Actions Column -->
-<dxi-column type="buttons" caption="Actions" width="250">
-  <dxi-button text="Delete" type="danger" stylingMode="contained"
-    (onClick)="onDelete($any($event).row.data)">
-  </dxi-button>
-  <dxi-button text="Cancel" type="normal" stylingMode="contained"
-    (onClick)="onCancel($any($event).row.data)">
-  </dxi-button>
-  <dxi-button text="View" type="default" stylingMode="contained"
-    (onClick)="onView($any($event).row.data)">
-  </dxi-button>
-  <dxi-button text="Edit" type="success" stylingMode="contained"
-    (onClick)="onEdit($any($event).row.data)">
-  </dxi-button>
+<dxi-column type="buttons" caption="Actions" [width]="200" [buttons]="[
+  {
+    hint: 'View',
+    icon: 'search',
+    onClick: onView
+  },
+ 
+  {
+    hint: 'Delete',
+    icon: 'trash',
+    onClick: onDelete
+  },
+  {
+    hint: 'Cancel',
+    icon: 'close',
+    onClick: onCancel
+  }
+]">
 </dxi-column>
+
+
+
 </dx-data-grid>

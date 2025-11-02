@@ -11,13 +11,13 @@ export class LoginService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  login(loginData: { username: string; password: string }): Observable<any> {
-    const payload = {
-      UserName: loginData.username,
-      Password: loginData.password
-    };
-    return this.http.post<any>('http://localhost:5035/api/Users/login', payload, { withCredentials: true });
-  }
+login(loginData: { username: string; password: string }): Observable<any> {
+  return this.http.post<any>(
+    'http://localhost:5035/api/Users/login', 
+    loginData, 
+    { withCredentials: true }  // <-- important for cookies
+  );
+}
 
  handleLoginResponse(res: any) {
   console.log('Login API response:', res);

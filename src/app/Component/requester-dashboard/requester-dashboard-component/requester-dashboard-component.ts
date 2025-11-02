@@ -1,93 +1,110 @@
-// requester-dashboard.component.ts
 import { Component, OnInit } from '@angular/core';
-import { SalesRequesterService } from '../../../services/sales-requester-service';
+import {
+  DxDataGridModule,
+  DxButtonModule,
+  DxTemplateModule,
+  DxLoadPanelModule
+} from 'devextreme-angular';
 import notify from 'devextreme/ui/notify';
-import { DxDataGridModule, DxButtonModule, DxTemplateModule, DxLoadPanelModule } from 'devextreme-angular';
+import { ApiService, SalesRequestDTO } from '../../../services/ApiService';
+import { AsyncPipe, NgClass } from '@angular/common';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, tap, map } from 'rxjs/operators';
 
-export interface SalesRequest {
-  SR: string;
-  SalesDate: Date | null;
-  SalesNote: string;
-  Approver: string;
-  Status: string;
-  Reason: string;
-  Actions?: string;
-}
 @Component({
   selector: 'app-requester-dashboard',
-  templateUrl: './requester-dashboard-component.html',
-  styleUrls: ['./requester-dashboard-component.scss'],
+  templateUrl: 'requester-dashboard-component.html',
+  styleUrls: ['requester-dashboard-component.scss'],
   standalone: true,
-imports: [DxDataGridModule, DxButtonModule, DxTemplateModule, DxLoadPanelModule]
-
-
+  imports: [AsyncPipe, NgClass, DxDataGridModule, DxButtonModule, DxTemplateModule, DxLoadPanelModule]
 })
 export class RequesterDashboardComponent implements OnInit {
-  requests: SalesRequest[] = [];
+  dataSource$: Observable<SalesRequestDTO[]> = of([]);
   loading = false;
 
-  constructor(private service: SalesRequesterService) {}
+  constructor(private apiService: ApiService) {}
 
-  ngOnInit() {
-    this.loadRequests();
+  ngOnInit(): void {
+    this.loadData();
   }
 
-  loadRequests() {
-    this.loading = true;
-    this.service.getUserRequests().subscribe({
-      next: (res: any) => {
-        this.requests = (res.data ?? []).map((r: any) => ({
-          SR: r.sr || r.SalesRequestNo || '',
-          SalesDate: r.salesDate ? new Date(r.salesDate) : null,
-          SalesNote: r.salesNote || '',
-          Approver: r.approver || '',
-          Status: r.status || '',
-          Reason: r.reason || '',
-          Actions: ''
-        }));
-        this.loading = false;
+  loadData(): void {
+  this.loading = true;
+  this.dataSource$ = this.apiService.getSalesRequests().pipe(
+    map(requests => requests.map(r => ({
+      id: r.id,
+      sr: r.salesRequestNo,
+      salesDate: r.salesDate,
+      salesNote: r.salesNote,
+      approver: r.approver,
+      status: r.status,
+      reason: r.reason,
+      actions: '',
+      salesRequestNo: r.salesRequestNo,        // add missing fields from DTO
+      requesterUsername: r.requesterUsername,
+      userId: r.userId,
+      rejectionRemark: r.rejectionRemark,
+      approvalRemark: r.approvalRemark,
+      salesRequestItems: r.salesRequestItems
+    }))),
+    catchError(err => {
+      notify(err.error?.message || err.message || 'Failed to load requests', 'error', 2000);
+      this.loading = false;
+      return of([]); // fallback to empty array
+    }),
+    finalize(() => this.loading = false)
+  );
+}
+
+
+  // --- Row Button Handlers ---
+  onView(e: any): void {
+    console.log('View button clicked. Event:', e);
+    console.log('View request data:', e.row.data);
+  }
+
+  onDelete = (e: any): void => {
+    const request = e.row.data;
+    console.log('Delete clicked for request:', request);
+    if (!request?.id) {
+      notify('Request ID invalid or missing', 'error', 2000);
+      return;
+    }
+    this.apiService.deleteSalesRequest(request.id).subscribe({
+      next: () => {
+        notify('Deleted successfully', 'success', 2000);
+        this.loadData();
       },
-      error: () => {
-        this.loading = false;
-        notify('Failed to load requests', 'error', 2000);
+      error: err => {
+        notify(err.message || 'Delete failed', 'error', 2000);
       }
     });
-  }
+  };
 
-  onDelete(request: SalesRequest) {
-  if (request.Status === 'Approved' || request.Status === 'Rejected') {
-    notify('Cannot delete approved or rejected requests', 'error', 2000);
-    return;
-  }
+  onCancel = (e: any): void => {
+    const request = e.row.data;
+    if (request.status !== 'Approved' && request.status !== 'Rejected') {
+      notify('Only approved or rejected requests can be cancelled', 'error', 2000);
+      return;
+    }
+    this.apiService.cancelSalesRequest(request.id).subscribe({
+      next: () => {
+        notify('Cancelled successfully', 'success', 2000);
+        this.loadData();
+      },
+      error: err => {
+        notify(err.message || 'Cancel failed', 'error', 2000);
+      }
+    });
+  };
 
-  this.service.deleteRequest(request.SR).subscribe({
-    next: () => {
-      notify('Request deleted successfully', 'success', 2000);
-      this.loadRequests();
-    },
-    error: (err) => notify(err.error?.Message || 'Delete failed', 'error', 2000)
-  });
+  // --- Helpers ---
+  getStatusBadgeClass(status: string): string {
+    switch (status) {
+      case 'Approved': return 'badge-approved';
+      case 'Rejected': return 'badge-rejected';
+      case 'Pending': return 'badge-pending';
+      default: return '';
+    }
+  }
 }
-
-onCancel(request: SalesRequest) {
-  if (request.Status !== 'Approved' && request.Status !== 'Rejected') {
-    notify('Only approved or rejected requests can be cancelled', 'error', 2000);
-    return;
-  }
-
-  this.service.cancelRequest(request.SR).subscribe({
-    next: () => {
-      notify('Request cancelled successfully', 'success', 2000);
-      this.loadRequests();
-    },
-    error: (err) => notify(err.error?.Message || 'Cancel failed', 'error', 2000)
-  });
-} onView(request: SalesRequest) {
-  console.log('View request:', request);
-  // Optionally open a popup or route to a detail page
-}
-
-onEdit(request: SalesRequest) {
-  console.log('Edit request:', request);
-  // Optionally open an edit form
-} }

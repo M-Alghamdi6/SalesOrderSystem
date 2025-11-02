@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { DxTextBoxModule, DxButtonModule, DxValidatorModule, DxValidationSummaryModule } from 'devextreme-angular';
 import { LoginService } from '../services/login-service';
 import notify from 'devextreme/ui/notify';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-log-in-form',
@@ -26,23 +27,27 @@ export class LogInForm implements OnInit, OnDestroy {
   service = inject(LoginService);
   private subscription: Subscription | null = null;
 
-  onLogin() {
-  this.loading = true;
-  this.service.login(this.loginData).subscribe({
-    next: (res) => {
-      this.loading = false;
-      this.service.handleLoginResponse(res);
-    },
-    error: (err) => {
-      this.loading = false;
-      notify('Login failed: ' + (err.error?.Message || 'Unknown error'), 'error', 2000);
-    }
-  });
-}
+  // ----------------- Login Handler -----------------
+  onLogin(): void {
+    this.loading = true;
 
+    this.subscription = this.service.login(this.loginData).subscribe({
+      next: (res: any) => { 
+        this.loading = false;
+        this.service.handleLoginResponse(res);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.loading = false;
+        const errorMsg = err.error?.Message || err.message || 'Unknown error';
+        notify('Login failed: ' + errorMsg, 'error', 2000);
+        console.error('Login error:', err);
+      }
+    });
+  }
 
-  ngOnInit() {}
-  ngOnDestroy() {
+  ngOnInit(): void {}
+
+  ngOnDestroy(): void {
     this.subscription?.unsubscribe();
   }
 }
