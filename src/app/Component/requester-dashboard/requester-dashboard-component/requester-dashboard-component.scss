@@ -1,0 +1,25 @@
+// Add to your SCSS file (requester-dashboard-component.scss)
+.badge-pending {
+  background-color: orange;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+.badge-approved {
+  background-color: green;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+.badge-rejected {
+  background-color: red;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+// Style for delete button
+::ng-deep .btn-danger .dx-button {
+  background-color: #d9534f !important;
+  border-color: #d43f3a !important;
+}

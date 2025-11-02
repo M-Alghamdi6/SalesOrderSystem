@@ -1,10 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { LogInForm } from './Pages/log-in-form/log-in-form';
-import {RequesterDashBoardComponent} from './Pages/requester-dash-board/requester-dash-board'
+import { Sidebar } from './Layout/SideBar/sidebar/sidebar';
+import { CreateRequestComponent } from './Component/create-order/create-order/create-order';
+
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, LogInForm, RequesterDashBoardComponent],
+  imports: [RouterOutlet, Sidebar, CreateRequestComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

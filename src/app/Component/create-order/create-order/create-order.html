@@ -1,0 +1,74 @@
+<!-- Loading panel -->
+<dx-load-panel
+  [visible]="loading"
+  message="Loading..."
+  shadingColor="rgba(0,0,0,0.4)">
+</dx-load-panel>
+
+<div class="create-request-container">
+  <h2>Create Sales Request</h2>
+
+  <!-- Form -->
+  <form [formGroup]="requestForm" (ngSubmit)="submit()" class="request-form">
+    <!-- SR (auto generated) -->
+    <dx-text-box
+      formControlName="sr"
+      placeholder="Sales Request No"
+      [disabled]="true">
+    </dx-text-box>
+
+    <!-- Sales Date -->
+    <dx-date-box
+      formControlName="salesDate"
+      placeholder="Select Sales Date"
+      type="date">
+    </dx-date-box>
+
+    <!-- Sales Note -->
+    <dx-text-area
+      formControlName="salesNote"
+      placeholder="Enter sales note"
+      height="90">
+    </dx-text-area>
+
+    <!-- Approver -->
+    <dx-select-box
+      formControlName="approver"
+      [items]="approvers"
+      displayExpr="userName"
+      valueExpr="userName"
+      placeholder="Select Approver">
+    </dx-select-box>
+
+    <!-- Submit button -->
+   <dx-button
+  text="Create Request"
+  type="success"
+  [useSubmitBehavior]="true">
+</dx-button>
+
+  </form>
+
+  <hr />
+
+  <!-- Existing requests table -->
+  <h3>Existing Requests</h3>
+  <dx-data-grid
+    [dataSource]="requests$ | async"
+    [showBorders]="true"
+    [keyExpr]="'id'">
+    
+    <dxi-column dataField="sr" caption="SR#" width="120"></dxi-column>
+    <dxi-column dataField="salesDate" caption="Date" dataType="date"></dxi-column>
+    <dxi-column dataField="salesNote" caption="Note"></dxi-column>
+    <dxi-column dataField="approver" caption="Approver"></dxi-column>
+    
+    <dxi-column dataField="status" caption="Status">
+      <ng-template dxTemplate="cell" let-cellData>
+        <span [ngClass]="getStatusBadgeClass(cellData.data.status)">
+          {{ cellData.data.status }}
+        </span>
+      </ng-template>
+    </dxi-column>
+  </dx-data-grid>
+</div>

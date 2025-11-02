@@ -1,0 +1,47 @@
+<dx-load-panel
+  [visible]="loading"
+  message="Loading..."
+  shadingColor="rgba(0,0,0,0.4)">
+</dx-load-panel>
+
+<dx-data-grid
+  [dataSource]="dataSource$ | async"
+  [keyExpr]="'id'"
+  [showBorders]="true">
+
+  <dxi-column dataField="id" caption="ID" width="50"></dxi-column>
+  <dxi-column dataField="salesDate" caption="Date"></dxi-column>
+  <dxi-column dataField="salesNote" caption="Note"></dxi-column>
+  <dxi-column dataField="approver" caption="Approver"></dxi-column>
+  
+  <dxi-column dataField="status" caption="Status">
+    <ng-template dxTemplate="cell" let-cellData>
+      <span [ngClass]="getStatusBadgeClass(cellData.data.status)">
+        {{ cellData.data.status }}
+      </span>
+    </ng-template>
+  </dxi-column>
+
+<dxi-column type="buttons" caption="Actions" [width]="200" [buttons]="[
+  {
+    hint: 'View',
+    icon: 'search',
+    onClick: onView
+  },
+ 
+  {
+    hint: 'Delete',
+    icon: 'trash',
+    onClick: onDelete
+  },
+  {
+    hint: 'Cancel',
+    icon: 'close',
+    onClick: onCancel
+  }
+]">
+</dxi-column>
+
+
+
+</dx-data-grid>
