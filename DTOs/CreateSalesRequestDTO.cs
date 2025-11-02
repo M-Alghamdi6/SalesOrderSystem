@@ -1,4 +1,4 @@
-﻿namespace SalesOrderSystem_BackEnd.DTOs
+namespace SalesOrderSystem_BackEnd.DTOs
 {
     public class CreateSalesRequestDTO
     {
@@ -12,6 +12,8 @@
         public string RequesterUsername { get; set; } = "";
         public string? Reason { get; set; }
         public int UserId { get; set; }
-    }
+
+    public IEnumerable<SalesRequestLineDTO>? SalesRequestItems { get; set; }
+  }
 
 }

@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using SalesOrderSystem_BackEnd.DTOs;
 using SalesOrderSystem_BackEnd.Models;
 using SalesOrderSystem_BackEnd.Services;
@@ -51,7 +51,11 @@ namespace SalesOrderSystem_BackEnd.Repository
                 };
             }
         }
-
-
+    public async Task<IEnumerable<UsersModel>> GetUsersByRole(string role)
+    {
+      var sql = "SELECT * FROM [apps].[Users] WHERE Role = @Role";
+      return await _sqlConnection.QueryAsync<UsersModel>(sql, new { Role = role });
     }
+
+  }
 }

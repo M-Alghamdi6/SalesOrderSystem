@@ -29,37 +29,42 @@ namespace SalesOrderSystem_BackEnd.Controller
             StatusCode((int)(await _service.GetAllSalesRequests()).StatusCode,
                        await _service.GetAllSalesRequests());
 
-        // Create new sales request
+    // Create new sales request
 
-        [HttpPost]
+    [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateSalesRequestDTO model)
-        {
-            var username = _httpContextAccessor.HttpContext?.Session.GetString("Username");
-            if (username == null)
-                return Unauthorized("No user logged in");
+    {
+      var username = _httpContextAccessor.HttpContext?.Session.GetString("Username");
+      if (username == null)
+        return Unauthorized("No user logged in");
 
-            var user = await _sqlConnection.QueryFirstOrDefaultAsync<UserRecord>(
-                "SELECT Id FROM [apps].[Users] WHERE Username = @Username",
-                new { Username = username });
+      var user = await _sqlConnection.QueryFirstOrDefaultAsync<UserRecord>(
+          "SELECT Id FROM [apps].[Users] WHERE Username = @Username",
+          new { Username = username });
 
-            if (user == null)
-                return Unauthorized("User not found");
+      if (user == null)
+        return Unauthorized("User not found");
 
-            // Map DTO to Model
-            var salesRequest = new SalesRequestModel
-            {
-                SalesNote = model.SalesNote,
-                SalesDate = DateTime.Now,
-                UserId = user.Id,             // <-- FK reference
-                RequesterUsername = username
-            };
+      // Map DTO to Model
+      var salesRequest = new SalesRequestModel
+      {
+        SalesRequestNo = model.SalesRequestNo,  // save SR from frontend
+        SalesDate = model.SalesDate,            // use the selected date
+        SalesNote = model.SalesNote,
+        Approver = model.Approver,
+        Status = model.Status,
+        Reason = model.Reason,
+        UserId = user.Id,
+        RequesterUsername = username
+      };
 
-            var result = await _service.CreateSalesRequest(salesRequest);
-            return Ok(result);
-        }
+      var result = await _service.CreateSalesRequest(salesRequest);
+      return Ok(result);
+    }
 
-        // Delete request
-        [HttpDelete("{id}")]
+
+    // Delete request
+    [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _service.DeleteSalesRequest(id);
@@ -73,7 +78,16 @@ namespace SalesOrderSystem_BackEnd.Controller
             var result = await _service.CancelSalesRequest(id);
             return StatusCode((int)result.StatusCode, result);
         }
-        private class UserRecord
+
+    [HttpGet("next")]
+    public async Task<IActionResult> GetNextSalesRequestInfo()
+    {
+      var result = await _service.GetNextSalesRequestInfo();
+      return Ok(result); // returns { sr: "SR-00123", approver: "JohnDoe" }
+    }
+
+
+    private class UserRecord
         {
             public int Id { get; set; }
             public string Username { get; set; } = string.Empty;

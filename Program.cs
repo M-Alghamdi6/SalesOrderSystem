@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using Microsoft.OpenApi.Models;
 using SalesOrderSystem_BackEnd.Profiles;
 using SalesOrderSystem_BackEnd.Services;

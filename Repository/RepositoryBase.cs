@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using SqlKata;
 using SqlKata.Compilers;
 using System.Data;
@@ -102,13 +102,13 @@ namespace SalesOrderSystem_BackEnd.Repository
         {
             try
             {
-                var query = new SqlKata.Query(_tableName).Where("Id", id);
-                var sqlResult = _compiler.Compile(query);
+        var query = new SqlKata.Query(_tableName).Where("Id", id);
+        var sqlResult = _compiler.Compile(query);
 
-                var parameters = new Dictionary<string, object> { ["p0"] = id };
-                var data = await _sqlConnection.QueryFirstOrDefaultAsync<T>(sqlResult.Sql, parameters);
+        var parameters = new Dictionary<string, object> { ["p0"] = id };
+        var data = await _sqlConnection.QueryFirstOrDefaultAsync<T>(sqlResult.Sql, sqlResult.NamedBindings);
 
-                return new JSONResponseDTO<T?>
+        return new JSONResponseDTO<T?>
                 {
                     StatusCode = data != null ? HttpStatusCode.OK : HttpStatusCode.NotFound,
                     Data = data,
@@ -177,13 +177,13 @@ namespace SalesOrderSystem_BackEnd.Repository
         {
             try
             {
-                var query = new SqlKata.Query(_tableName).Where("Id", id).AsDelete();
-                var sqlResult = _compiler.Compile(query);
+        var query = new SqlKata.Query(_tableName).Where("Id", id).AsDelete();
+        var sqlResult = _compiler.Compile(query);
 
-                var parameters = new Dictionary<string, object> { ["p0"] = id };
-                var affected = await _sqlConnection.ExecuteAsync(sqlResult.Sql, parameters);
+        var parameters = new Dictionary<string, object> { ["p0"] = id };
+        var affected = await _sqlConnection.ExecuteAsync(sqlResult.Sql, sqlResult.NamedBindings);
 
-                return new JSONResponseDTO<object>
+        return new JSONResponseDTO<object>
                 {
                     StatusCode = affected > 0 ? HttpStatusCode.OK : HttpStatusCode.NotFound,
                     Message = affected > 0 ? "Record deleted successfully." : "Record not found",

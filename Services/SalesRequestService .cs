@@ -51,29 +51,41 @@ public class SalesRequestService : RepositoryBase<SalesRequestModel>, ISalesRequ
         return $"Reason provided by {approver}";
     }
 
-    // ------------------- Create -------------------
-    public async Task<JSONResponseDTO<SalesRequesterTableDTO>> CreateSalesRequest(SalesRequestModel model)
-    {
-        model.SalesRequestNo = await GenerateSalesRequestNo();
-        model.Approver = await GetAutoApprover();
-        model.Status = GetStatus(model.Approver);
-        model.Reason = await GetReasonFromApproverApi(model.Approver);
+  // ------------------- Create -------------------
+  public async Task<JSONResponseDTO<SalesRequesterTableDTO>> CreateSalesRequest(SalesRequestModel model)
+  {
+    // Use frontend SR if provided, otherwise generate new
+    if (string.IsNullOrWhiteSpace(model.SalesRequestNo))
+      model.SalesRequestNo = await GenerateSalesRequestNo();
 
-        var result = await this.AddAsync(model);
+    // Get approver from DB
+    model.Approver = await GetAutoApprover();
 
-       
-        return _mapping.MapResponse<SalesRequestModel, SalesRequesterTableDTO>(result);
-    }
+    // Status depends on approver
+    model.Status = GetStatus(model.Approver);
 
-    // ------------------- Get All -------------------
-    public async Task<JSONResponseDTO<IEnumerable<SalesRequesterTableDTO>>> GetAllSalesRequests()
-    {
-        var result = await this.GetAllAsync();
-        return _mapping.MapResponse<IEnumerable<SalesRequestModel>, IEnumerable<SalesRequesterTableDTO>>(result);
-    }
+    // Reason assigned by approver
+    model.Reason = await GetReasonFromApproverApi(model.Approver);
 
-    // ------------------- Get By Id -------------------
-    public async Task<JSONResponseDTO<SalesRequesterTableDTO?>> GetSalesRequestById(int id)
+    // Save to DB
+    var result = await this.AddAsync(model);
+
+    return _mapping.MapResponse<SalesRequestModel, SalesRequesterTableDTO>(result);
+  }
+
+
+  // ------------------- Get All -------------------
+  public async Task<JSONResponseDTO<IEnumerable<SalesRequesterTableDTO>>> GetAllSalesRequests()
+  {
+    var result = await this.GetAllAsync(); // JSONResponseDTO<List<SalesRequestModel>>
+
+    // Directly map using your mapping service
+    return _mapping.MapResponse<IEnumerable<SalesRequestModel>, IEnumerable<SalesRequesterTableDTO>>(result);
+  }
+
+
+  // ------------------- Get By Id -------------------
+  public async Task<JSONResponseDTO<SalesRequesterTableDTO?>> GetSalesRequestById(int id)
     {
         var result = await this.GetByIdAsync(id);
         return _mapping.MapResponse<SalesRequestModel, SalesRequesterTableDTO>(result);
@@ -168,4 +180,18 @@ public class SalesRequestService : RepositoryBase<SalesRequestModel>, ISalesRequ
         response.StatusCode = System.Net.HttpStatusCode.OK;
         return response;
     }
+
+  public async Task<object> GetNextSalesRequestInfo()
+  {
+    var sr = await GenerateSalesRequestNo();
+    var approver = await GetAutoApprover();
+
+    return new
+    {
+      sr,
+      approver
+    };
+  }
+
+
 }

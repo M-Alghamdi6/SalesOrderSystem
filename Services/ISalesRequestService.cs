@@ -15,7 +15,10 @@ namespace SalesOrderSystem_BackEnd.Services
         Task<JSONResponseDTO<object>> DeleteSalesRequest(int id);
         Task<JSONResponseDTO<SalesRequesterTableDTO>> CancelSalesRequest(int id);
         Task<ServiceResponse<IEnumerable<SalesRequestModel>>> GetSalesRequestsByUserId(int userId);
-    }
+
+    Task<object> GetNextSalesRequestInfo();
+
+  }
     public class ServiceResponse<T>
     {
         public T? Data { get; set; }

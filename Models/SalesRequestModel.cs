@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SalesOrderSystem_BackEnd.Models
@@ -35,7 +35,7 @@ public class SalesRequestModel
 
         public string? Reason { get; set; }
 
-        // 🔗 Foreign key relationship to User
+        // Foreign key relationship to User
         [ForeignKey(nameof(User))]
         public int UserId { get; set; }
 
