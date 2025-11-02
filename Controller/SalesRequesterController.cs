@@ -32,13 +32,12 @@ namespace SalesOrderSystem_BackEnd.Controller
         // Create new sales request
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] SalesRequesterTableDTO model)
+    public async Task<IActionResult> Create([FromBody] CreateSalesRequestDTO model)
         {
             var username = _httpContextAccessor.HttpContext?.Session.GetString("Username");
             if (username == null)
                 return Unauthorized("No user logged in");
 
-            // Get UserId from DB
             var user = await _sqlConnection.QueryFirstOrDefaultAsync<UserRecord>(
                 "SELECT Id FROM [apps].[Users] WHERE Username = @Username",
                 new { Username = username });
